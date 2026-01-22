@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 function ExpenseDetails({ incomeAmt, expenseAmt }) {
     return (
