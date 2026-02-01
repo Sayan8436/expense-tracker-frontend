@@ -17,7 +17,7 @@ function Home() {
 
   const navigate = useNavigate();
 
-  // 🔐 helper to get auth header
+  // 🔐 Auth header
   const getAuthHeader = () => {
     const token = localStorage.getItem('token');
     return {
@@ -25,7 +25,7 @@ function Home() {
     };
   };
 
-  // 📥 Fetch expenses
+  // 📥 Fetch expenses (single source of truth)
   const fetchExpenses = useCallback(async () => {
     try {
       const res = await fetch(`${APIUrl}/expenses`, {
@@ -34,20 +34,24 @@ function Home() {
 
       if (res.status === 403) {
         handleError('Session expired. Please login again.');
+        localStorage.clear();
         return navigate('/login');
       }
 
       const result = await res.json();
-      setExpenses(result.data || []);
+      setExpenses(Array.isArray(result.data) ? result.data : []);
     } catch (err) {
-      handleError(err.message || 'Failed to fetch expenses');
+      handleError('Failed to fetch expenses');
+      setExpenses([]);
     }
   }, [navigate]);
 
-  // 👤 Load user + expenses on mount
+  // 👤 On mount
   useEffect(() => {
     const user = localStorage.getItem('loggedInUser');
-    if (!user) {
+    const token = localStorage.getItem('token');
+
+    if (!user || !token) {
       navigate('/login');
     } else {
       setLoggedInUser(user);
@@ -55,18 +59,24 @@ function Home() {
     }
   }, [fetchExpenses, navigate]);
 
-  // 💰 Calculate income & expense
+  // 💰 Calculate totals
   useEffect(() => {
-    const amounts = expenses.map((item) => item.amount);
-    const income = amounts.filter((a) => a > 0).reduce((a, b) => a + b, 0);
+    const amounts = expenses.map((e) => Number(e.amount) || 0);
+
+    const income = amounts
+      .filter((a) => a > 0)
+      .reduce((a, b) => a + b, 0);
+
     const expense =
-      amounts.filter((a) => a < 0).reduce((a, b) => a + b, 0) * -1;
+      amounts
+        .filter((a) => a < 0)
+        .reduce((a, b) => a + b, 0) * -1;
 
     setIncomeAmt(income);
     setExpenseAmt(expense);
   }, [expenses]);
 
-  // ➕ Add expense
+  // ➕ Add expense (IMPORTANT FIX HERE)
   const addTransaction = async (data) => {
     try {
       const res = await fetch(`${APIUrl}/expenses`, {
@@ -85,9 +95,11 @@ function Home() {
       }
 
       handleSuccess(result.message);
-      setExpenses(result.data);
+
+      // ✅ REFRESH LIST AFTER ADD
+      fetchExpenses();
     } catch (err) {
-      handleError(err.message || 'Something went wrong');
+      handleError('Something went wrong');
     }
   };
 
@@ -106,16 +118,17 @@ function Home() {
       }
 
       handleSuccess(result.message);
-      setExpenses(result.data);
+
+      // ✅ REFRESH LIST AFTER DELETE
+      fetchExpenses();
     } catch (err) {
-      handleError(err.message || 'Something went wrong');
+      handleError('Something went wrong');
     }
   };
 
   // 🚪 Logout
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('loggedInUser');
+    localStorage.clear();
     handleSuccess('Logged out successfully');
     setTimeout(() => navigate('/login'), 800);
   };

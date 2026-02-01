@@ -37,6 +37,7 @@ function Login() {
       });
 
       const result = await res.json();
+      console.log('LOGIN RESPONSE:', result);
       const { success, message, token, name } = result;
 
       if (!success) {
@@ -44,10 +45,12 @@ function Login() {
       }
 
       // ✅ store token returned by backend
-      localStorage.setItem('token', token);
-      localStorage.setItem('loggedInUser', name);
+      localStorage.setItem('token', result.token);
+      localStorage.setItem('loggedInUser', result.name);
 
-      handleSuccess(message);
+     console.log('SAVED TOKEN:', localStorage.getItem('token'));
+
+      handleSuccess(result.message);
       setTimeout(() => navigate('/home'), 800);
     } catch (err) {
       handleError('Server error');
