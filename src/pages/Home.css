@@ -185,15 +185,15 @@
   }
 }
 
-/* ===== Wrapper ===== */
+/* ===== Balance Section ===== */
 .balance-wrapper {
   margin: 24px 0;
 }
 
-/* ===== Balance Card ===== */
+/* Balance Card (Dark) */
 .balance-card {
   background: linear-gradient(135deg, #0f0f1a, #1b1b2f);
-  color: #fff;
+  color: #ffffff;
   padding: 28px;
   border-radius: 18px;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
@@ -212,7 +212,7 @@
   font-weight: 700;
 }
 
-/* ===== Income / Expense Card ===== */
+/* Income & Expense Card */
 .stats-card {
   display: flex;
   align-items: center;
@@ -228,15 +228,14 @@
 }
 
 .stat span {
-  display: block;
   font-size: 13px;
   color: #7f8c8d;
-  margin-bottom: 4px;
 }
 
 .stat p {
   font-size: 20px;
   font-weight: 600;
+  margin-top: 4px;
 }
 
 .stat.income p {
@@ -247,10 +246,8 @@
   color: #e74c3c;
 }
 
-/* Divider */
 .divider {
   width: 1px;
   height: 45px;
   background: #e0e0e0;
 }
-

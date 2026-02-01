@@ -3,13 +3,13 @@ function ExpenseDetails({ incomeAmt, expenseAmt }) {
 
   return (
     <div className="balance-wrapper">
-      {/* Balance Card */}
+      {/* Balance */}
       <div className="balance-card">
         <p className="balance-title">Your Balance</p>
         <h1 className="balance-amount">₹ {balance}</h1>
       </div>
 
-      {/* Income & Expense Cards */}
+      {/* Income & Expense */}
       <div className="stats-card">
         <div className="stat income">
           <span>Income</span>
